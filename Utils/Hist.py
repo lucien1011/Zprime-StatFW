@@ -11,6 +11,15 @@ def getIntegral(hist):
             )
     return integral,error
 
+def getCountAndErrorByRange(hist,lower_value,upper_value,):
+    error = ROOT.Double(0.)
+    integral = hist.IntegralAndError(
+            hist.GetXaxis().FindFixBin(lower_value),
+            hist.GetXaxis().FindFixBin(upper_value),
+            error,
+            )
+    return integral,error
+
 def getCountAndError(hist,central,width,isSR=True):
     lower_value = central*(1.-width)
     upper_value = central*(1.+width)

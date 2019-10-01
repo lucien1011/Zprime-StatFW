@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--inputDir",action="store")
 parser.add_argument("--outputPath",action="store")
 parser.add_argument("--selectStr",action="store",default="")
+parser.add_argument("--method",action="store",default="AsymptoticLimits")
 
 option = parser.parse_args()
 
@@ -30,15 +31,18 @@ CMS_lumi.lumi_13TeV = "77.3 fb^{-1}"
 tdrstyle.setTDRStyle()
 
 setLogY         = True
-expOnly         = True 
+expOnly         = True
+saveRootFile    = True
 #quantiles       = ["down2","down1","central","up1","up2","obs"]
-quantiles       = ["down2","down1","central","up1","up2",]
+#quantiles       = ["down2","down1","central","up1","up2",]
+quantiles       = ["central",]
 varName         = "limit"
 plots           = ["r",]
 maxFactor       = 1.5
 draw_theory     = False
 y_label_dict    = {
                     "r": "Signal strength",
+                    "sigma": "Significance",
                   }
 x_label         = "Z^{'} mass"
 
@@ -47,6 +51,8 @@ def calculate(r_value,window_value,what):
         return r_value 
     elif what == "xs":
         return r_value*xsec[model+'_M'+str(window_value)]
+    elif what == "sigma":
+        return r_value
     else:
         raise RuntimeError
 
@@ -58,7 +64,7 @@ for quantile in quantiles:
     outDict[quantile] = OrderedDict()
 for cardDir in glob.glob(inputDir+"*"+option.selectStr+"*/"):
     print "Reading directory "+cardDir
-    inputFile = ROOT.TFile(cardDir+"higgsCombineTest.AsymptoticLimits.mH120.root","READ")
+    inputFile = ROOT.TFile(cardDir+"higgsCombineTest."+option.method+".mH120.root","READ")
     tree = inputFile.Get("limit")
     window_name = cardDir.split("/")[-2]
     window_value = int(window_name.split("_")[1][1:])
@@ -120,11 +126,16 @@ for plot in plots:
     frame.GetXaxis().SetLimits(min(window_values),max(window_values))
     frame.SetMaximum(max([calculate(outDict[quan][window_value],window_value,plot) for quan in quantiles for window_value in window_values ])*maxFactor)
     for i,window_value in enumerate(window_values):
-        yellow.SetPoint( i, window_value,   calculate(outDict["up2"][window_value]         , window_value, plot) )
-        yellow.SetPoint( 2*nPoints-1-i, window_value,   calculate(outDict["down2"][window_value]       , window_value, plot) )
-        green.SetPoint( i, window_value,    calculate(outDict["up1"][window_value]         , window_value, plot) )
-        green.SetPoint( 2*nPoints-1-i, window_value,    calculate(outDict["down1"][window_value]       , window_value, plot) )
-        median.SetPoint( i, window_value,   calculate(outDict["central"][window_value]     , window_value, plot) )
+        if "up2" in quantiles:
+            yellow.SetPoint( i, window_value,   calculate(outDict["up2"][window_value]         , window_value, plot) )
+        if "down2" in quantiles:
+            yellow.SetPoint( 2*nPoints-1-i, window_value,   calculate(outDict["down2"][window_value]       , window_value, plot) )
+        if "up1" in quantiles:
+            green.SetPoint( i, window_value,    calculate(outDict["up1"][window_value]         , window_value, plot) )
+        if "down1" in quantiles:
+            green.SetPoint( 2*nPoints-1-i, window_value,    calculate(outDict["down1"][window_value]       , window_value, plot) )
+        if "central" in quantiles:
+            median.SetPoint( i, window_value,   calculate(outDict["central"][window_value]     , window_value, plot) )
     
     mg = ROOT.TMultiGraph()
     mg.SetMaximum(1.E4)
@@ -161,3 +172,9 @@ for plot in plots:
     mg.Draw("a")
 
     c.SaveAs(option.outputPath.replace(".pdf","_"+plot+".pdf"))
+
+    if saveRootFile:
+        outputFile = ROOT.TFile(option.outputPath.replace(".pdf","_"+plot+".root"),"RECREATE")
+        median.SetName("median")
+        median.Write()
+        outputFile.Close()
