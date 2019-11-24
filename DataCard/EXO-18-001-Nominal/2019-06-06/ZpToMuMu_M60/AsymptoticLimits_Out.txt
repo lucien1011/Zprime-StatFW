@@ -1,0 +1,18 @@
+ <<< Combine >>> 
+>>> including systematics
+Will use a-priori expected background instead of a-posteriori one.
+>>> method used is AsymptoticLimits
+>>> random number generator seed is 123456
+Missing background ModelConfig 'ModelConfig_bonly' in workspace 'w' in file /home/ariana.gonzalez/CMSSW_10_4_0/src/NR/Zprime-StatFW/DataCard/EXO-18-001-Nominal/2019-06-06/ZpToMuMu_M60/ZpToMuMu_M60.root
+Will make one from the signal ModelConfig 'ModelConfig' setting signal strenth 'r' to zero
+Computing results starting from expected outcome (a-priori)
+Constraints of type SimpleGaussianConstraint: 11
+
+ -- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 0.5316
+Expected 16.0%: r < 0.7169
+Expected 50.0%: r < 1.0156
+Expected 84.0%: r < 1.4528
+Expected 97.5%: r < 1.9959
+
+Done in 0.00 min (cpu), 0.00 min (real)

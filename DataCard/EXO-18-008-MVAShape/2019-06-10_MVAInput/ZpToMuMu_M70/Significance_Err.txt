@@ -1,0 +1,11 @@
+ <<< Combine >>> 
+>>> including systematics
+>>> method used is Significance
+>>> random number generator seed is 123456
+Missing background ModelConfig 'ModelConfig_bonly' in workspace 'w' in file /home/ariana.gonzalez/CMSSW_10_4_0/src/NR/Zprime-StatFW/DataCard/EXO-18-008-MVAShape/2019-06-10_MVAInput/ZpToMuMu_M70/ZpToMuMu_M70.root
+Will make one from the signal ModelConfig 'ModelConfig' setting signal strenth 'r' to zero
+Computing results starting from expected outcome (a-priori)
+
+ -- Significance -- 
+Significance: 0.291566
+Done in 0.00 min (cpu), 0.00 min (real)
